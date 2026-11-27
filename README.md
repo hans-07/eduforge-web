@@ -37,3 +37,16 @@ cuando una release pública incluye el EXE y su archivo SHA-256. El historial
 completo de GitHub sigue accesible incluso si la API falla.
 Confirma los canales de contacto y apoyo, y revisa los borradores legales antes
 de publicar el sitio.
+
+## Documentación y capturas
+
+Los capítulos en español e inglés se editan en `guides.py` y en `lessons-es.txt` y `lessons-en.txt`. Para distribuir el mismo contenido con el editor offline, ejecuta desde el workspace:
+
+```powershell
+python eduforge-web/guides.py --studio EduForge-Studio/handbook-data.js
+python eduforge-web/build.py
+```
+
+Studio incorpora una copia generada del manual. Cada proyecto conserva sus archivos y se puede compilar por separado.
+
+Las imágenes de `site/assets/showcase/` provienen de la exportación HTML de tres proyectos de ejemplo y de la interfaz real de Studio. Se generan desde una compilación local con `node scripts/capture-website.mjs` en el repositorio privado de Studio. Copia por idioma las imágenes PNG y los archivos de proyecto `.eduforge.json` de `target/website-captures/`. El compilador de la web usa exclusivamente esos recursos estáticos.

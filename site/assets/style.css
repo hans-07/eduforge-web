@@ -128,3 +128,33 @@ footer .shell { padding-block: 1.4rem; align-items: flex-start; }
 
 .doc-search { width: 100%; min-width: 0; font: inherit; padding: .45rem; border-radius: .35rem; border: 1px solid var(--line); background: var(--panel); color: var(--text); }
 .doc-search-status { font-size: .875rem; margin-bottom: .4rem; }
+
+.showcase { margin-block: clamp(2rem, 5vw, 4.5rem); overflow: hidden; border: 1px solid var(--line); border-radius: 1.35rem; background: var(--panel); }
+.showcase-intro { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem 3rem; align-items: end; padding: clamp(1.4rem, 4vw, 3.3rem); }
+.showcase-intro p { max-width: 39ch; }
+.showcase-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: clamp(.6rem, 3vw, 2.4rem); padding: .2rem clamp(.8rem, 5vw, 4rem) clamp(1.4rem, 4vw, 3.3rem); }
+.showcase-example { min-width: 0; }
+.showcase-example:nth-child(2) { margin-top: 1.7rem; }
+.phone { width: min(100%, 17.5rem); margin-inline: auto; padding: .45rem; border-radius: clamp(.85rem, 3vw, 2rem); background: #201d27; border: 1px solid #514959; box-shadow: 0 13px 26px #120e2458; }
+.phone img { width: 100%; height: auto; border-radius: clamp(.6rem, 2.4vw, 1.55rem); }
+.showcase-example figcaption { padding: .9rem 0 0; max-width: 17.5rem; margin-inline: auto; }
+.showcase-example strong, .showcase-example span { display: block; }
+.showcase-example strong { color: var(--text); font-size: 1rem; }
+.doc-shot img { height: auto; }
+@media (max-width: 44rem) {
+  .showcase-intro { grid-template-columns: 1fr; }
+  .showcase-grid { grid-template-columns: repeat(3, minmax(10rem, 1fr)); overflow-x: auto; scroll-snap-type: x proximity; }
+  .showcase-example { scroll-snap-align: center; }
+  .showcase-example:nth-child(2) { margin-top: .6rem; }
+}
+
+.docs-list { max-height: min(69vh, 46rem); overflow-y: auto; padding-inline-end: .3rem; }
+.docs-group { display: grid; gap: .1rem; margin-bottom: .9rem; }
+.docs-group > span { font-size: .8rem; font-weight: 700; color: var(--accent); padding: .35rem .55rem .1rem; }
+.docs-group:not(:has(a:not([hidden]))) { display: none; }
+.showcase-example figcaption a { display: inline-block; margin-top: .45rem; color: var(--accent); text-underline-offset: .2em; }
+@media (max-width: 42rem) {
+  .docs-list { max-height: 12rem; width: 100%; }
+  .docs-group { display: flex; flex-wrap: wrap; gap: .25rem; }
+  .docs-group > span { width: 100%; }
+}

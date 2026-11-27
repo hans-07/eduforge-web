@@ -1,10 +1,10 @@
 from pathlib import Path
 from html import escape
 
-from guides import GUIDES, PHOTOS, SLUGS
+from guides import GUIDES, SLUGS
 
 ROOT = Path(__file__).resolve().parent / "site"
-SCREENSHOTS = ("design.png", "blocks.png", "blocks-dark.png", "campus-demo.png")
+SCREENSHOTS = ("design.png", "blocks.png", "library.png")
 PAGES = ("inicio", "descargas", "tutoriales", "sobre", "apoyar", "soporte", "legal")
 NAV = {
     "es": ("Inicio", "Descargas", "Documentación", "Sobre EduForge", "Apoyar", "Soporte", "Legal"),
@@ -108,10 +108,39 @@ def home(lang, base):
     copy = HOME[lang]
     links = "".join(f'<li>{value}</li>' for value in copy["values"])
     # Visible links also work with scripting disabled.
+    labels, captions, gallery_title, gallery_intro, examples = {
+        "es": (
+            ("Diseño", "Bloques", "Biblioteca"),
+            ("Lienzo e inspector de EduForge Studio", "Editor de lógica por bloques", "Biblioteca de proyectos y preferencias"),
+            "Aplicaciones hechas en Studio",
+            "Tres proyectos de ejemplo muestran cómo combinar componentes, datos y lógica en una interfaz propia.",
+            (("rooms", "Sala Abierta", "Imagen local, fecha y una acción de revisión"),
+             ("lab", "Stock de laboratorio", "Tabla, gráfico y recuento de materiales"),
+             ("study", "Cuaderno de estudio", "Progreso, casillas y notas")),
+        ),
+        "en": (
+            ("Design", "Blocks", "Library"),
+            ("EduForge Studio canvas and inspector", "Block-based logic editor", "Project library and preferences"),
+            "Apps made in Studio",
+            "Three sample projects show how components, data, and logic come together in your own interface.",
+            (("rooms", "Open Room", "Local image, date, and a review action"),
+             ("lab", "Lab inventory", "Table, chart, and material count"),
+             ("study", "Study notebook", "Progress, checkboxes, and notes")),
+        ),
+    }[lang]
+    assets = base + "assets/showcase/" + lang + "/"
     controls = "".join(
-        f'<a class="view" href="{base}assets/{file}" data-caption="{escape(caption)}"'
+        f'<a class="view" href="{assets}{file}" data-caption="{escape(caption)}"'
         f'{" aria-current=true" if i == 0 else ""}>{label}</a>'
-        for i, (file, caption, label) in enumerate(zip(SCREENSHOTS, copy["captions"], copy["tabs"]))
+        for i, (file, caption, label) in enumerate(zip(SCREENSHOTS, captions, labels))
+    )
+    download_project = "Descargar proyecto" if lang == "es" else "Download project"
+    phones = "".join(
+        f'<figure class="showcase-example"><div class="phone"><img src="{assets}{key}.png" '
+        f'alt="{escape(title)}" width="390" height="740"></div>'
+        f'<figcaption><strong>{title}</strong><span>{description}</span>'
+        f'<a href="{assets}{key}.eduforge.json" download>{download_project}</a></figcaption></figure>'
+        for key, title, description in examples
     )
     features = "".join(f'<li><h3>{title}</h3><p>{description}</p></li>' for title, description in copy["features"])
     return f"""
@@ -122,15 +151,19 @@ def home(lang, base):
         <a class="secondary" href="{base + url(lang, 'tutoriales')}">{copy['learn']}</a></div>
         <ul class="values">{links}</ul>
       </section>
+      <section class="showcase" aria-labelledby="showcase-title">
+        <div class="showcase-intro"><h2 id="showcase-title">{gallery_title}</h2><p>{gallery_intro}</p></div>
+        <div class="showcase-grid">{phones}</div>
+      </section>
+      <section class="workflow"><h2>{copy['flow']}</h2><ul>{features}</ul></section>
       <figure class="studio" data-gallery>
         <div class="studio-bar"><strong>EduForge Studio</strong><div class="views">{controls}</div></div>
-        <img data-screenshot src="{base}assets/design.png" alt="{copy['captions'][0]}" width="1440" height="900" fetchpriority="high">
-        <figcaption aria-live="polite">{copy['captions'][0]}</figcaption>
+        <img data-screenshot src="{assets}design.png" alt="{captions[0]}" width="1440" height="900" fetchpriority="high">
+        <figcaption aria-live="polite">{captions[0]}</figcaption>
       </figure>
-      <section class="workflow"><h2>{copy['flow']}</h2><ul>{features}</ul></section>
       <section class="demo"><div><h2>{copy['demo']}</h2><p>{copy['demo_text']}</p>
         <a class="secondary" href="{base + url(lang, 'tutoriales')}">{copy['learn']}</a></div>
-        <img src="{base}assets/campus-demo.png" alt="{copy['captions'][-1]}" width="1440" height="900" loading="lazy">
+        <img src="{assets}library.png" alt="{captions[2]}" width="1440" height="900" loading="lazy">
       </section>
       <section class="classroom"><h2>{copy['classroom']}</h2><p>{copy['class_text']}</p></section>"""
 
@@ -178,16 +211,28 @@ def documentation(lang, base, slug):
         ("Buscar en la documentación", "No se encontraron guías.") if lang == "es"
         else ("Search documentation", "No matching guides.")
     )
-    links = []
+    groups = (
+        (("Inicio", "Start here"), ("", "primer-proyecto", "proyecto-completo", "almacenamiento", "preferencias")),
+        (("Diseño", "Design"), ("diseno", "componentes", "medios", "adaptacion", "accesibilidad")),
+        (("Lógica", "Logic"), ("bloques", "navegacion", "validacion", "expresiones", "funciones", "acceso")),
+        (("Datos y exportación", "Data and export"), ("datos", "datos-operaciones", "csv", "exportar")),
+        (("Consulta", "Reference"), ("depuracion", "referencia")),
+    )
+    links = {}
     for i, (key, (title, description, chapters)) in enumerate(zip(SLUGS, guides)):
-        search_text = [title, description]
+        search_text = [key, title, description]
         for label, prose, steps in chapters:
             search_text.extend((label, prose, *steps))
         active = ' aria-current="page"' if i == index else ""
-        links.append(
+        links[key] = (
             f'<a data-guide="{escape(" ".join(search_text))}" '
             f'href="{base + guide_url(lang, key)}"{active}>{escape(title)}</a>'
         )
+    assert set(links) == {key for _, keys in groups for key in keys}
+    group_links = "".join(
+        f'<div class="docs-group"><span>{names[0 if lang == "es" else 1]}</span>'
+        + "".join(links[key] for key in keys) + "</div>" for names, keys in groups
+    )
     toc, article = [], []
     for i, (label, copy, steps) in enumerate(sections, 1):
         anchor = f"section-{i}"
@@ -197,12 +242,18 @@ def documentation(lang, base, slug):
             prose += "<ol>" + "".join(f"<li>{escape(step)}</li>" for step in steps) + "</ol>"
         article.append(f'<section><h2 id="{anchor}">{escape(label)}</h2>{prose}</section>')
     image = ""
-    if index in PHOTOS:
-        alt = {
-            "es": ("Biblioteca de proyectos de EduForge Studio", "Lienzo y propiedades del editor", "Tutorial de conexión de bloques", "Vista previa de Campus Reserva"),
-            "en": ("EduForge Studio project library", "Editor canvas and inspector", "Guided block connection exercise", "Campus Reserva preview"),
-        }[lang][index - 1]
-        image = f'<figure class="doc-shot"><a href="{base}assets/{PHOTOS[index]}"><img src="{base}assets/{PHOTOS[index]}" alt="{alt}" width="1440" height="900" loading="lazy"></a><figcaption>{alt}</figcaption></figure>'
+    photos = {
+        "primer-proyecto": ("library.png", "Biblioteca de proyectos", "Project library"),
+        "diseno": ("design.png", "Lienzo e inspector", "Canvas and inspector"),
+        "bloques": ("blocks.png", "Evento y bloques conectados", "Event and connected blocks"),
+        "preferencias": ("library.png", "Controles de tema e idioma", "Theme and language controls"),
+        "referencia": ("design.png", "Áreas principales del editor", "Main areas of the editor"),
+    }
+    if slug in photos:
+        file, es_alt, en_alt = photos[slug]
+        alt = es_alt if lang == "es" else en_alt
+        asset = f"{base}assets/showcase/{lang}/{file}"
+        image = f'<figure class="doc-shot"><a href="{asset}"><img src="{asset}" alt="{alt}" width="1440" height="900" loading="lazy"></a><figcaption>{alt}</figcaption></figure>'
     neighbors = "".join(
         f'<a href="{base + guide_url(lang, SLUGS[neighbor])}"><span>{label}</span>{escape(guides[neighbor][0])}</a>'
         for neighbor, label in zip((index - 1, index + 1), more) if 0 <= neighbor < len(guides)
@@ -210,7 +261,7 @@ def documentation(lang, base, slug):
     body = f'''<div class="docs">
       <aside class="docs-side"><nav aria-label="{sidebar}"><strong>{sidebar}</strong>
       <input class="doc-search" type="search" placeholder="{search_label}" aria-label="{search_label}" hidden>
-      <p class="doc-search-status" role="status" hidden>{empty}</p>{"".join(links)}</nav></aside>
+      <p class="doc-search-status" role="status" hidden>{empty}</p><div class="docs-list">{group_links}</div></nav></aside>
       <article class="doc-article"><h1>{heading}</h1><p class="intro">{intro}</p>
       {article[0]}{image}{"".join(article[1:])}
       <nav class="doc-next" aria-label="{sidebar}">{neighbors}</nav></article>

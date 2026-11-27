@@ -1,4 +1,4 @@
-﻿"""Bilingual Studio guides for the public website."""
+"""Bilingual Studio guides for the public website."""
 
 SLUGS = ("", "primer-proyecto", "diseno", "bloques", "datos", "exportar", "preferencias")
 PHOTOS = {1: "library.png", 2: "design.png", 3: "tutorial-conectar.png", 4: "campus-demo.png"}
@@ -60,3 +60,49 @@ GUIDES = {
           ("Language", "Select Español or English in the library. Studio reloads the interface and remembers your choice for that installation. Names, text, and data in your projects keep their original language.", ()))),
     ),
 }
+
+def read_lessons(language):
+    from pathlib import Path
+
+    file = Path(__file__).with_name(f"lessons-{language}.txt")
+    lessons = {}
+    for line in file.read_text(encoding="utf-8-sig").splitlines():
+        if not line.strip():
+            continue
+        slug, title, description, content = line.split("|", 3)
+        sections = []
+        for item in content.split("||"):
+            label, text = item.split(": ", 1)
+            sections.append((label, "", tuple(text.split(" / "))) if label in {"Ejercicio", "Exercise"} else (label, text, ()))
+        lessons[slug] = (title, description, tuple(sections))
+    return lessons
+
+
+for language in GUIDES:
+    lessons = read_lessons(language)
+    if language == "es":
+        extra_slugs = tuple(lessons)
+    elif tuple(lessons) != extra_slugs:
+        raise ValueError("Las rutas de las guías deben coincidir en ambos idiomas.")
+    GUIDES[language] += tuple(lessons.values())
+
+SLUGS += extra_slugs
+
+
+def export_studio(destination):
+    import json
+    from pathlib import Path
+
+    data = {"slugs": SLUGS, "guides": GUIDES}
+    Path(destination).write_text(
+        "export const handbook = " + json.dumps(data, ensure_ascii=False, indent=2) + ";\n",
+        encoding="utf-8",
+    )
+
+
+if __name__ == "__main__":
+    import argparse
+
+    options = argparse.ArgumentParser()
+    options.add_argument("--studio", required=True)
+    export_studio(options.parse_args().studio)
