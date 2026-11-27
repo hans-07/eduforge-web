@@ -1,21 +1,23 @@
 from pathlib import Path
 from html import escape
 
+from guides import GUIDES, PHOTOS, SLUGS
+
 ROOT = Path(__file__).resolve().parent / "site"
-SCREENSHOTS = ("design.png", "blocks.png", "campus-demo.png")
+SCREENSHOTS = ("design.png", "blocks.png", "blocks-dark.png", "campus-demo.png")
 PAGES = ("inicio", "descargas", "tutoriales", "sobre", "apoyar", "soporte", "legal")
 NAV = {
-    "es": ("Inicio", "Descargas", "Tutoriales", "Sobre EduForge", "Apoyar", "Soporte", "Legal"),
-    "en": ("Home", "Downloads", "Tutorials", "About", "Support the project", "Help", "Legal"),
+    "es": ("Inicio", "Descargas", "Documentación", "Sobre EduForge", "Apoyar", "Soporte", "Legal"),
+    "en": ("Home", "Downloads", "Docs", "About", "Support the project", "Help", "Legal"),
 }
 HOME = {
     "es": {
         "title": "Crea software.<br><em>Aprende construyendo.</em>",
         "intro": "Diseña interfaces, conecta bloques y convierte tus ideas en aplicaciones funcionales. Un estudio visual gratuito para estudiantes de cualquier carrera.",
-        "download": "Ir a descargas", "learn": "Explorar tutoriales", "skip": "Ir al contenido",
+        "download": "Ir a descargas", "learn": "Leer la documentación", "skip": "Ir al contenido",
         "values": ("Gratis", "Funciona offline", "Sin cuenta"),
-        "tabs": ("Diseño", "Lógica", "Campus Reserva"),
-        "captions": ("Lienzo de diseño e inspector de EduForge Studio", "Editor de eventos y bloques de EduForge Studio", "Campus Reserva en la vista previa de EduForge Studio"),
+        "tabs": ("Diseño", "Lógica", "Modo oscuro", "Campus Reserva"),
+        "captions": ("Lienzo de diseño e inspector de EduForge Studio", "Editor de eventos y bloques de EduForge Studio", "Editor de bloques en inglés con modo oscuro y un proyecto de inventario de ejemplo", "Campus Reserva en la vista previa de EduForge Studio"),
         "flow": "De la idea a la aplicación",
         "features": (("Diseña en el lienzo", "Añade campos, botones e imágenes. Organiza las capas y ajusta la interfaz desde el inspector."),
                      ("Conecta bloques", "Define eventos y acciones, trabaja con tablas y prueba el resultado desde el editor."),
@@ -28,10 +30,10 @@ HOME = {
     "en": {
         "title": "Build software.<br><em>Learn by doing.</em>",
         "intro": "Design interfaces, connect blocks, and turn your ideas into working apps. A free visual studio for students in any field.",
-        "download": "View downloads", "learn": "Explore tutorials", "skip": "Skip to content",
+        "download": "View downloads", "learn": "Read the docs", "skip": "Skip to content",
         "values": ("Free", "Works offline", "No account required"),
-        "tabs": ("Design", "Logic", "Campus Reserva"),
-        "captions": ("EduForge Studio design canvas and inspector", "EduForge Studio event and block editor", "Campus Reserva running in EduForge Studio preview"),
+        "tabs": ("Design", "Logic", "Dark mode", "Campus Reserva"),
+        "captions": ("EduForge Studio design canvas and inspector", "EduForge Studio event and block editor", "English block editor in dark mode with a sample inventory project", "Campus Reserva running in EduForge Studio preview"),
         "flow": "From idea to app",
         "features": (("Design on the canvas", "Add fields, buttons, and images. Arrange layers and adjust your interface in the inspector."),
                      ("Connect blocks", "Define events and actions, work with tables, and test the result in the editor."),
@@ -46,16 +48,10 @@ CONTENT = {
     "es": (
         ("Estado de publicación", "Consulta aquí las versiones oficiales de EduForge Studio.", (
             ("Compatibilidad documentada", "La edición de escritorio y el lanzador portátil se preparan para Windows de 64 bits. La edición HTML se abre en Edge o Chrome. Los requisitos mínimos de memoria y almacenamiento están pendientes de verificación."),
-            ("Instalación", "Cuando se publique el instalador oficial, ejecútalo en Windows de 64 bits. Para la edición HTML, abre el archivo oficial directamente en Edge o Chrome."),
+            ("Instalación", "Descarga el instalador desde el historial oficial y ejecútalo en Windows de 64 bits. Para la edición HTML, abre el archivo oficial directamente en Edge o Chrome."),
             ("Verificación SHA-256", "En Windows, ejecuta Get-FileHash -Algorithm SHA256 -LiteralPath 'archivo.exe' en PowerShell. Compara el resultado con la suma publicada para ese archivo."),
         )),
-        ("Aprende con un proyecto", "Sigue el flujo de trabajo de Studio con una práctica pequeña.", (
-            ("Crea tu primer proyecto", "En Biblioteca, crea un proyecto o abre Campus Reserva y elige Editar una copia. Exporta una copia de seguridad en JSON para guardar tu avance."),
-            ("Diseña una pantalla", "En Diseño, elige un tamaño de lienzo y agrega un campo y un botón. Selecciona cada componente para ajustar su posición y apariencia en el inspector."),
-            ("Conecta un evento", "En Lógica, selecciona el evento del botón y conecta una acción debajo del encabezado. Pulsa Probar para ejecutar la pantalla y revisar los bloques ejecutados."),
-            ("Trabaja con datos", "En Datos, crea una tabla o importa un CSV. En Lógica, conecta un bloque Valor de columna por cada valor de la fila y respeta el orden de los encabezados."),
-            ("Exporta y prueba", "Genera un HTML independiente o un ejecutable Windows de 64 bits. Abre la exportación y comprueba la navegación desde la primera página."),
-            ("Ideas por carrera", "Usa una tabla para registrar materiales en ingeniería, organiza fichas de lectura en humanidades o practica con un inventario en administración."))),
+        None,  # Documentation has its own chapter content.
         ("Sobre EduForge", "Una herramienta gratuita para aprender desarrollo de software haciendo proyectos.", (
             ("Misión", "Acercar la creación de software a estudiantes de cualquier carrera con un entorno visual que funciona offline."),
             ("Visión", "Facilitar que más estudiantes puedan diseñar, probar y compartir aplicaciones creadas como parte de su aprendizaje."),
@@ -78,16 +74,10 @@ CONTENT = {
         ("Release status", "Find official EduForge Studio releases here.", (
 
             ("Documented compatibility", "The desktop edition and portable launcher target 64-bit Windows. The HTML edition opens in Edge or Chrome. Minimum memory and storage requirements are awaiting verification."),
-            ("Installation", "Once the official installer is published, run it on 64-bit Windows. For the HTML edition, open the official file directly in Edge or Chrome."),
+            ("Installation", "Download the installer from the official release history and run it on 64-bit Windows. For the HTML edition, open the official file directly in Edge or Chrome."),
             ("SHA-256 verification", "On Windows, run Get-FileHash -Algorithm SHA256 -LiteralPath 'file.exe' in PowerShell. Compare the result with the published checksum for that file."),
         )),
-        ("Learn with a project", "Follow the Studio workflow with a small exercise.", (
-            ("Create your first project", "In the Library, create a project or open Campus Reserva and choose Edit a copy. Export a JSON backup to save your progress."),
-            ("Design a screen", "In Design, choose a canvas size and add a field and a button. Select each component to adjust its position and appearance in the inspector."),
-            ("Connect an event", "In Logic, select the button event and connect an action below its header. Choose Test to run the screen and check which blocks ran."),
-            ("Work with data", "In Data, create a table or import a CSV. In Logic, connect one Column value block for each row value in header order."),
-            ("Export and test", "Generate a standalone HTML file or a 64-bit Windows executable. Open the export and check navigation from the first page."),
-            ("Ideas by field", "Track materials in engineering, organize reading notes in the humanities, or practice with an inventory in business studies."))),
+        None,  # Documentation has its own chapter content.
         ("About EduForge", "A free tool for learning software development through projects.", (
             ("Mission", "Make software creation accessible to students in any field through a visual environment that works offline."),
             ("Vision", "Help more students design, test, and share apps they create as part of their studies."),
@@ -140,7 +130,7 @@ def home(lang, base):
       <section class="workflow"><h2>{copy['flow']}</h2><ul>{features}</ul></section>
       <section class="demo"><div><h2>{copy['demo']}</h2><p>{copy['demo_text']}</p>
         <a class="secondary" href="{base + url(lang, 'tutoriales')}">{copy['learn']}</a></div>
-        <img src="{base}assets/campus-demo.png" alt="{copy['captions'][2]}" width="1440" height="900" loading="lazy">
+        <img src="{base}assets/campus-demo.png" alt="{copy['captions'][-1]}" width="1440" height="900" loading="lazy">
       </section>
       <section class="classroom"><h2>{copy['classroom']}</h2><p>{copy['class_text']}</p></section>"""
 
@@ -171,7 +161,65 @@ def releases(lang):
     </section>"""
 
 
-def render(lang, index, base):
+def guide_url(lang, slug):
+    parent = url(lang, "tutoriales").removesuffix("index.html")
+    return parent + (slug + "/" if slug else "") + "index.html"
+
+
+def documentation(lang, base, slug):
+    guides = GUIDES[lang]
+    index = SLUGS.index(slug)
+    heading, intro, sections = guides[index]
+    sidebar, contents, more = (
+        ("Guías de Studio", "En esta página", ("Anterior", "Siguiente")) if lang == "es"
+        else ("Studio guides", "On this page", ("Previous", "Next"))
+    )
+    search_label, empty = (
+        ("Buscar en la documentación", "No se encontraron guías.") if lang == "es"
+        else ("Search documentation", "No matching guides.")
+    )
+    links = []
+    for i, (key, (title, description, chapters)) in enumerate(zip(SLUGS, guides)):
+        search_text = [title, description]
+        for label, prose, steps in chapters:
+            search_text.extend((label, prose, *steps))
+        active = ' aria-current="page"' if i == index else ""
+        links.append(
+            f'<a data-guide="{escape(" ".join(search_text))}" '
+            f'href="{base + guide_url(lang, key)}"{active}>{escape(title)}</a>'
+        )
+    toc, article = [], []
+    for i, (label, copy, steps) in enumerate(sections, 1):
+        anchor = f"section-{i}"
+        toc.append(f'<a href="#{anchor}">{escape(label)}</a>')
+        prose = f"<p>{escape(copy)}</p>" if copy else ""
+        if steps:
+            prose += "<ol>" + "".join(f"<li>{escape(step)}</li>" for step in steps) + "</ol>"
+        article.append(f'<section><h2 id="{anchor}">{escape(label)}</h2>{prose}</section>')
+    image = ""
+    if index in PHOTOS:
+        alt = {
+            "es": ("Biblioteca de proyectos de EduForge Studio", "Lienzo y propiedades del editor", "Tutorial de conexión de bloques", "Vista previa de Campus Reserva"),
+            "en": ("EduForge Studio project library", "Editor canvas and inspector", "Guided block connection exercise", "Campus Reserva preview"),
+        }[lang][index - 1]
+        image = f'<figure class="doc-shot"><a href="{base}assets/{PHOTOS[index]}"><img src="{base}assets/{PHOTOS[index]}" alt="{alt}" width="1440" height="900" loading="lazy"></a><figcaption>{alt}</figcaption></figure>'
+    neighbors = "".join(
+        f'<a href="{base + guide_url(lang, SLUGS[neighbor])}"><span>{label}</span>{escape(guides[neighbor][0])}</a>'
+        for neighbor, label in zip((index - 1, index + 1), more) if 0 <= neighbor < len(guides)
+    )
+    body = f'''<div class="docs">
+      <aside class="docs-side"><nav aria-label="{sidebar}"><strong>{sidebar}</strong>
+      <input class="doc-search" type="search" placeholder="{search_label}" aria-label="{search_label}" hidden>
+      <p class="doc-search-status" role="status" hidden>{empty}</p>{"".join(links)}</nav></aside>
+      <article class="doc-article"><h1>{heading}</h1><p class="intro">{intro}</p>
+      {article[0]}{image}{"".join(article[1:])}
+      <nav class="doc-next" aria-label="{sidebar}">{neighbors}</nav></article>
+      <aside class="docs-toc"><nav aria-label="{contents}"><strong>{contents}</strong>{"".join(toc)}</nav></aside>
+    </div>'''
+    return heading, intro, body
+
+
+def render(lang, index, base, slug=""):
     copy = HOME[lang]
     names = NAV[lang]
     other = "en" if lang == "es" else "es"
@@ -186,6 +234,9 @@ def render(lang, index, base):
     if index == 0:
         body = home(lang, base)
         intro = copy["intro"]
+    elif page == "tutoriales":
+        heading, intro, body = documentation(lang, base, slug)
+        title = f"{heading} · EduForge Studio"
     else:
         heading, intro, sections = CONTENT[lang][index - 1]
         rows = "".join(f'<section><h2>{label}</h2><p>{description}</p></section>' for label, description in sections)
@@ -193,6 +244,9 @@ def render(lang, index, base):
             rows = releases(lang) + rows
             release_script = f'\n<script src="{base}assets/releases.js" defer></script>'
         body = f'<article class="reading"><h1>{heading}</h1><p class="intro">{intro}</p>{rows}</article>'
+    alternate = guide_url(other, slug) if page == "tutoriales" else url(other, page)
+    theme_options = ("Sistema", "Claro", "Oscuro") if lang == "es" else ("System", "Light", "Dark")
+    theme_menu = "".join(f'<option value="{key}">{label}</option>' for key, label in zip(("system", "light", "dark"), theme_options))
     return f"""<!doctype html>
 <html lang="{lang}">
 <head>
@@ -208,8 +262,8 @@ def render(lang, index, base):
 <a class="skip" href="#main">{copy['skip']}</a>
 <header class="header"><div class="shell">
 <a class="brand" href="{base + url(lang, 'inicio')}"><img src="{base}assets/eduforge-logo.webp" width="36" height="36" alt=""><span>EduForge<span class="brand-studio"> Studio</span></span></a>
-<nav aria-label="EduForge Studio">{nav}<a hreflang="{other}" lang="{other}" href="{base + url(other, page)}">{copy['language']}</a>
-<button class="theme" type="button" aria-label="{copy['theme']}" title="{copy['theme']}" hidden><span aria-hidden="true">◐</span></button></nav>
+<nav aria-label="EduForge Studio">{nav}<a hreflang="{other}" lang="{other}" href="{base + alternate}">{copy['language']}</a>
+<select class="theme" aria-label="{copy['theme']}" hidden>{theme_menu}</select></nav>
 </div></header>
 <main class="shell" id="main">{body}
 </main>
@@ -227,3 +281,9 @@ if __name__ == "__main__":
             base = "../" * len(path.parent.relative_to(ROOT).parts)
             path.write_text(render(language, index, base), encoding="utf-8")
 
+
+        for slug in SLUGS[1:]:
+            path = ROOT / guide_url(language, slug)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            base = "../" * len(path.parent.relative_to(ROOT).parts)
+            path.write_text(render(language, PAGES.index("tutoriales"), base, slug), encoding="utf-8")

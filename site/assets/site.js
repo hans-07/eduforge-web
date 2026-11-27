@@ -1,26 +1,28 @@
-﻿const theme = document.querySelector(".theme");
-const root = document.documentElement;
+const theme = document.querySelector(".theme");
 const preference = matchMedia("(prefers-color-scheme: light)");
-let savedTheme;
+const choices = ["system", "light", "dark"];
+let selection = "system";
 try {
-  savedTheme = localStorage.getItem("eduforge-theme");
+  const stored = localStorage.getItem("eduforge-theme");
+  if (choices.includes(stored)) selection = stored;
 } catch {
-  // The theme can still be changed for the current page.
+  // Theme selection remains available without local storage.
 }
-function setTheme(value) {
-  root.dataset.theme = value;
-  theme.setAttribute("aria-pressed", String(value === "light"));
+function applyTheme() {
+  document.documentElement.dataset.theme = selection === "system"
+    ? (preference.matches ? "light" : "dark") : selection;
 }
-setTheme(savedTheme || (preference.matches ? "light" : "dark"));
+theme.value = selection;
+applyTheme();
 theme.hidden = false;
-preference.addEventListener("change", (event) => {
-  if (!savedTheme) setTheme(event.matches ? "light" : "dark");
+preference.addEventListener("change", () => {
+  if (selection === "system") applyTheme();
 });
-theme.addEventListener("click", () => {
-  savedTheme = root.dataset.theme === "dark" ? "light" : "dark";
-  setTheme(savedTheme);
+theme.addEventListener("change", () => {
+  selection = theme.value;
+  applyTheme();
   try {
-    localStorage.setItem("eduforge-theme", savedTheme);
+    localStorage.setItem("eduforge-theme", selection);
   } catch {
     // Keep the selection for this page.
   }
@@ -43,4 +45,20 @@ if (gallery) {
       view.setAttribute("aria-current", "true");
     });
   }
+}
+
+const search = document.querySelector(".doc-search");
+if (search) {
+  const entries = [...document.querySelectorAll("[data-guide]")];
+  const feedback = document.querySelector(".doc-search-status");
+  const normalize = (value) => value.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  search.hidden = false;
+  search.addEventListener("input", () => {
+    const terms = normalize(search.value).trim().split(/\s+/).filter(Boolean);
+    for (const entry of entries) {
+      const content = normalize(entry.dataset.guide);
+      entry.hidden = !terms.every((term) => content.includes(term));
+    }
+    feedback.hidden = entries.some((entry) => !entry.hidden);
+  });
 }

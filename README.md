@@ -1,4 +1,4 @@
-﻿# EduForge Web
+# EduForge Web
 
 Sitio estático bilingüe de EduForge Studio. El español es el idioma inicial.
 El contenido y las rutas se generan desde `build.py`. Los estilos, el selector de tema
@@ -15,7 +15,7 @@ python -m http.server 8000 --bind 127.0.0.1 --directory site
 ```
 
 Abre http://127.0.0.1:8000/. También puedes abrir `site/index.html` directamente.
-Regenera las 14 páginas al editar los textos y conserva los HTML generados en Git.
+Regenera las páginas al editar los textos y conserva los HTML generados en Git. Las guías bilingües viven en `guides.py`.
 
 ## Diseño
 
