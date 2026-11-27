@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 from html import escape
 
 ROOT = Path(__file__).resolve().parent / "site"
@@ -45,11 +45,10 @@ HOME = {
 CONTENT = {
     "es": (
         ("Estado de publicación", "Consulta aquí las versiones oficiales de EduForge Studio.", (
-            ("Versión estable", "Aún no hay una versión estable pública disponible. La versión documentada en el proyecto es 0.4.0."),
             ("Compatibilidad documentada", "La edición de escritorio y el lanzador portátil se preparan para Windows de 64 bits. La edición HTML se abre en Edge o Chrome. Los requisitos mínimos de memoria y almacenamiento están pendientes de verificación."),
             ("Instalación", "Cuando se publique el instalador oficial, ejecútalo en Windows de 64 bits. Para la edición HTML, abre el archivo oficial directamente en Edge o Chrome."),
             ("Verificación SHA-256", "En Windows, ejecuta Get-FileHash -Algorithm SHA256 -LiteralPath 'archivo.exe' en PowerShell. Compara el resultado con la suma publicada para ese archivo."),
-            ("Historial", "Las fechas, tamaños, sumas y notas aparecerán cuando haya una publicación oficial."))),
+        )),
         ("Aprende con un proyecto", "Sigue el flujo de trabajo de Studio con una práctica pequeña.", (
             ("Crea tu primer proyecto", "En Biblioteca, crea un proyecto o abre Campus Reserva y elige Editar una copia. Exporta una copia de seguridad en JSON para guardar tu avance."),
             ("Diseña una pantalla", "En Diseño, elige un tamaño de lienzo y agrega un campo y un botón. Selecciona cada componente para ajustar su posición y apariencia en el inspector."),
@@ -77,11 +76,11 @@ CONTENT = {
     ),
     "en": (
         ("Release status", "Find official EduForge Studio releases here.", (
-            ("Stable version", "A public stable release is not yet available. The project documents version 0.4.0."),
+
             ("Documented compatibility", "The desktop edition and portable launcher target 64-bit Windows. The HTML edition opens in Edge or Chrome. Minimum memory and storage requirements are awaiting verification."),
             ("Installation", "Once the official installer is published, run it on 64-bit Windows. For the HTML edition, open the official file directly in Edge or Chrome."),
             ("SHA-256 verification", "On Windows, run Get-FileHash -Algorithm SHA256 -LiteralPath 'file.exe' in PowerShell. Compare the result with the published checksum for that file."),
-            ("Release history", "Dates, file sizes, checksums, and release notes will appear when an official release is available."))),
+        )),
         ("Learn with a project", "Follow the Studio workflow with a small exercise.", (
             ("Create your first project", "In the Library, create a project or open Campus Reserva and choose Edit a copy. Export a JSON backup to save your progress."),
             ("Design a screen", "In Design, choose a canvas size and add a field and a button. Select each component to adjust its position and appearance in the inspector."),
@@ -146,6 +145,32 @@ def home(lang, base):
       <section class="classroom"><h2>{copy['classroom']}</h2><p>{copy['class_text']}</p></section>"""
 
 
+RELEASE_COPY = {
+    "es": (
+        "Versiones publicadas", "Ver el historial completo en GitHub",
+        "No hay un instalador estable con SHA-256 disponible.",
+        "No se pudo consultar GitHub. Revisa el historial oficial.",
+        "Último instalador estable:",
+    ),
+    "en": (
+        "Published releases", "View the full history on GitHub",
+        "No stable installer with a SHA-256 checksum is available.",
+        "GitHub could not be reached. Check the official history.",
+        "Latest stable installer:",
+    ),
+}
+
+
+def releases(lang):
+    title, link, empty, unavailable, stable = RELEASE_COPY[lang]
+    return f"""<section data-releases data-empty="{empty}" data-unavailable="{unavailable}" data-stable="{stable}">
+      <h2>{title}</h2>
+      <p role="status"></p>
+      <ul hidden></ul>
+      <p><a href="https://github.com/hans-07/eduforge-releases/releases">{link}</a></p>
+    </section>"""
+
+
 def render(lang, index, base):
     copy = HOME[lang]
     names = NAV[lang]
@@ -157,12 +182,16 @@ def render(lang, index, base):
         for i, key in enumerate(PAGES[1:3], 1)
     )
     foot = "".join(f'<a href="{base + url(lang, key)}">{name}</a>' for key, name in zip(PAGES[3:], names[3:]))
+    release_script = ""
     if index == 0:
         body = home(lang, base)
         intro = copy["intro"]
     else:
         heading, intro, sections = CONTENT[lang][index - 1]
         rows = "".join(f'<section><h2>{label}</h2><p>{description}</p></section>' for label, description in sections)
+        if page == "descargas":
+            rows = releases(lang) + rows
+            release_script = f'\n<script src="{base}assets/releases.js" defer></script>'
         body = f'<article class="reading"><h1>{heading}</h1><p class="intro">{intro}</p>{rows}</article>'
     return f"""<!doctype html>
 <html lang="{lang}">
@@ -173,7 +202,7 @@ def render(lang, index, base):
 <title>{title}</title>
 <link rel="icon" href="{base}assets/eduforge-logo.webp">
 <link rel="stylesheet" href="{base}assets/style.css">
-<script src="{base}assets/site.js" defer></script>
+<script src="{base}assets/site.js" defer></script>{release_script}
 </head>
 <body>
 <a class="skip" href="#main">{copy['skip']}</a>

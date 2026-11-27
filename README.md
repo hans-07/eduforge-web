@@ -31,7 +31,9 @@ cuando el almacenamiento local está disponible.
 directorio de salida. En GitHub Pages puede cargarse como artefacto mediante
 Actions. Las rutas relativas admiten despliegue bajo un subdirectorio.
 
-La página de descargas muestra el estado documentado del producto. Antes de
-habilitar descargas, confirma el repositorio de distribución, los archivos y sus
-sumas SHA-256. Confirma también los canales de contacto y apoyo, y revisa los
-borradores legales antes de publicar.
+Las páginas de descargas consultan la API pública del canal
+`hans-07/eduforge-releases` sin token. Los enlaces de instaladores aparecen
+cuando una release pública incluye el EXE y su archivo SHA-256. El historial
+completo de GitHub sigue accesible incluso si la API falla.
+Confirma los canales de contacto y apoyo, y revisa los borradores legales antes
+de publicar el sitio.
